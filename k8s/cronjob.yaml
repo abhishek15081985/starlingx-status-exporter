@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: status-exporter
+spec:
+  schedule: "*/30 * * * *"          # every 30 minutes
+  concurrencyPolicy: Forbid          # never run two exports at once
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: Never
+          imagePullSecrets:
+            - name: default-registry-key      # StarlingX local registry pull secret
+          containers:
+            - name: status-exporter
+              image: registry.local:9001/docker.io/library/status-exporter:latest
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - configMapRef:
+                    name: status-exporter-config
+              env:
+                - name: API_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: status-exporter-api
+                      key: username
+                - name: API_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: status-exporter-api
+                      key: password
+              volumeMounts:
+                - name: ssh-key
+                  mountPath: /etc/exporter/ssh
+                  readOnly: true
+          volumes:
+            - name: ssh-key
+              secret:
+                secretName: status-exporter-ssh
+                defaultMode: 0400

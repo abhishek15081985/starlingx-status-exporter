@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: status-exporter-config
+data:
+  DC_HOST: "192.0.2.10"                 # System Controller OAM IP / FQDN
+  BASTION_HOSTS: "192.0.2.21 192.0.2.22" # space-separated; one entry is fine for a lab
+  DEST_USER: "exporter"
+  DEST_DIR: "/var/tmp"
+  SSH_KEY: "/etc/exporter/ssh/id_rsa"
+  # CA_CERT: "/etc/exporter/ca/ca.crt"   # optional, see README (TLS)

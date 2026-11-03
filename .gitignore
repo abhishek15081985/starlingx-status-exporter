@@ -1,0 +1,14 @@
+# Never commit secrets or keys
+secret*.yaml
+!*.example.yaml
+*.pem
+*.key
+id_rsa*
+*-ssh-key*
+.env
+
+# Build output
+*.tar
+out/
+tt.txt
+.DS_Store
